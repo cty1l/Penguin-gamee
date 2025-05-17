@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لعبة البطريق 🐧</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #87ceeb;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: linear-gradient(to top, #87ceeb 60%, #ffffff 100%);
+    }
+    #winMessage {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      font-weight: bold;
+      color: #222;
+      background: #fff9;
+      padding: 20px 40px;
+      border-radius: 12px;
+      border: 3px solid #222;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+  <div id="winMessage">100k soon.. 🤑</div>
+  <audio id="jumpSound" src="https://www.myinstants.com/media/sounds/mario-jump.mp3" preload="auto"></audio>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const winMessage = document.getElementById("winMessage");
+    const jumpSound = document.getElementById("jumpSound");
+
+    // تحميل الصور
+    const penguinImg = new Image();
+    penguinImg.src = "https://i.ibb.co/4Z1k2Wh/penguin-sprite.png";
+
+    const groundImg = new Image();
+    groundImg.src = "https://i.ibb.co/xsdtF0W/ground.png";
+
+    const cloudImg = new Image();
+    cloudImg.src = "https://i.ibb.co/1rNf9Sr/cloud.png";
+
+    const coinImg = new Image();
+    coinImg.src = "https://i.ibb.co/k8TVbdh/coin.png";
+
+    let penguin = {
+      x: 50,
+      y: 300,
+      width: 40,
+      height: 40,
+      dy: 0,
+      jumping: false
+    };
+
+    const gravity = 0.9;
+    const jumpPower = -12;
+    const groundY = 340;
+    let keys = {};
+    let coinsCollected = 0;
+
+    let obstacles = [
+      { x: 600, y: 300, width: 30, height: 40 },
+      { x: 900, y: 300, width: 30, height: 40 },
+    ];
+
+    let coins = [
+      { x: 200, y: 250, collected: false },
+      { x: 500, y: 220, collected: false },
+      { x: 750, y: 200, collected: false },
+    ];
+
+    document.addEventListener("keydown", (e) => {
+      keys[e.key] = true;
+      if (e.key === "ArrowUp" && !penguin.jumping) {
+        penguin.dy = jumpPower;
+        penguin.jumping = true;
+        jumpSound.currentTime = 0;
+        jumpSound.play();
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      keys[e.key] = false;
+    });
+
+    function update() {
+      if (keys["ArrowRight"]) penguin.x += 5;
+      if (keys["ArrowLeft"]) penguin.x -= 5;
+
+      penguin.dy += gravity;
+      penguin.y += penguin.dy;
+
+      if (penguin.y > groundY - penguin.height) {
+        penguin.y = groundY - penguin.height;
+        penguin.dy = 0;
+        penguin.jumping = false;
+      }
+
+      obstacles.forEach(obs => {
+        obs.x -= 4;
+        if (obs.x + obs.width < 0) {
+          obs.x = 800 + Math.random() * 200;
+        }
+      });
+
+      coins.forEach(coin => {
+        if (!coin.collected &&
+            penguin.x < coin.x + 20 &&
+            penguin.x + penguin.width > coin.x &&
+            penguin.y < coin.y + 20 &&
+            penguin.y + penguin.height > coin.y) {
+              coin.collected = true;
+              coinsCollected++;
+        }
+      });
+
+      if (penguin.x > 780 && coinsCollected === coins.length) {
+        winMessage.style.display = "block";
+        cancelAnimationFrame(animationId);
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.drawImage(cloudImg, 100, 50, 80, 50);
+      ctx.drawImage(cloudImg, 400, 30, 100, 60);
+
+      for (let i = 0; i < canvas.width; i += 40) {
+        ctx.drawImage(groundImg, i, groundY, 40, 60);
+      }
+
+      ctx.drawImage(penguinImg, penguin.x, penguin.y, penguin.width, penguin.height);
+
+      ctx.fillStyle = "brown";
+      obstacles.forEach(obs => {
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+      });
+
+      coins.forEach(coin => {
+        if (!coin.collected) {
+          ctx.drawImage(coinImg, coin.x, coin.y, 20, 20);
+        }
+      });
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    let animationId = requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لعبة البطريق 🐧</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #87ceeb;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: linear-gradient(to top, #87ceeb 60%, #ffffff 100%);
+    }
+    #winMessage {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      font-weight: bold;
+      color: #222;
+      background: #fff9;
+      padding: 20px 40px;
+      border-radius: 12px;
+      border: 3px solid #222;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+  <div id="winMessage">100k soon.. 🤑</div>
+  <audio id="jumpSound" src="https://www.myinstants.com/media/sounds/mario-jump.mp3" preload="auto"></audio>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const winMessage = document.getElementById("winMessage");
+    const jumpSound = document.getElementById("jumpSound");
+
+    // تحميل الصور
+    const penguinImg = new Image();
+    penguinImg.src = "https://i.ibb.co/4Z1k2Wh/penguin-sprite.png";
+
+    const groundImg = new Image();
+    groundImg.src = "https://i.ibb.co/xsdtF0W/ground.png";
+
+    const cloudImg = new Image();
+    cloudImg.src = "https://i.ibb.co/1rNf9Sr/cloud.png";
+
+    const coinImg = new Image();
+    coinImg.src = "https://i.ibb.co/k8TVbdh/coin.png";
+
+    let penguin = {
+      x: 50,
+      y: 300,
+      width: 40,
+      height: 40,
+      dy: 0,
+      jumping: false
+    };
+
+    const gravity = 0.9;
+    const jumpPower = -12;
+    const groundY = 340;
+    let keys = {};
+    let coinsCollected = 0;
+
+    let obstacles = [
+      { x: 600, y: 300, width: 30, height: 40 },
+      { x: 900, y: 300, width: 30, height: 40 },
+    ];
+
+    let coins = [
+      { x: 200, y: 250, collected: false },
+      { x: 500, y: 220, collected: false },
+      { x: 750, y: 200, collected: false },
+    ];
+
+    document.addEventListener("keydown", (e) => {
+      keys[e.key] = true;
+      if (e.key === "ArrowUp" && !penguin.jumping) {
+        penguin.dy = jumpPower;
+        penguin.jumping = true;
+        jumpSound.currentTime = 0;
+        jumpSound.play();
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      keys[e.key] = false;
+    });
+
+    function update() {
+      if (keys["ArrowRight"]) penguin.x += 5;
+      if (keys["ArrowLeft"]) penguin.x -= 5;
+
+      penguin.dy += gravity;
+      penguin.y += penguin.dy;
+
+      if (penguin.y > groundY - penguin.height) {
+        penguin.y = groundY - penguin.height;
+        penguin.dy = 0;
+        penguin.jumping = false;
+      }
+
+      obstacles.forEach(obs => {
+        obs.x -= 4;
+        if (obs.x + obs.width < 0) {
+          obs.x = 800 + Math.random() * 200;
+        }
+      });
+
+      coins.forEach(coin => {
+        if (!coin.collected &&
+            penguin.x < coin.x + 20 &&
+            penguin.x + penguin.width > coin.x &&
+            penguin.y < coin.y + 20 &&
+            penguin.y + penguin.height > coin.y) {
+              coin.collected = true;
+              coinsCollected++;
+        }
+      });
+
+      if (penguin.x > 780 && coinsCollected === coins.length) {
+        winMessage.style.display = "block";
+        cancelAnimationFrame(animationId);
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.drawImage(cloudImg, 100, 50, 80, 50);
+      ctx.drawImage(cloudImg, 400, 30, 100, 60);
+
+      for (let i = 0; i < canvas.width; i += 40) {
+        ctx.drawImage(groundImg, i, groundY, 40, 60);
+      }
+
+      ctx.drawImage(penguinImg, penguin.x, penguin.y, penguin.width, penguin.height);
+
+      ctx.fillStyle = "brown";
+      obstacles.forEach(obs => {
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+      });
+
+      coins.forEach(coin => {
+        if (!coin.collected) {
+          ctx.drawImage(coinImg, coin.x, coin.y, 20, 20);
+        }
+      });
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    let animationId = requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
